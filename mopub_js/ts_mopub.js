@@ -33,6 +33,17 @@ function ts_callback(data) {
     document.write('<div id="ts-div-' + ufid + '" style="width:'+window.ts_ad_width+';height:'+window.ts_ad_height+'">');
     document.write(data.ad_units[0].html_vertical);
     document.write('</div>');
+
+    window.webviewDidAppearHelper = function() {
+        var img = document.createElement('img');
+        img.src = data.ad_units[0].imp_url;
+        img.width = 0;
+        img.height = 0;
+        img.style.display = 'none';
+
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(img);
+    }
 }
 
 function getServerUrl() {
