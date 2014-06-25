@@ -126,6 +126,7 @@ function getSession() {
 (function () {
     if (window.ts_ad_unit_id == null || window.ts_pub == null || window.ts_app == null) {
         console.log("Failed to load ts ad. Missing 'ts_ad_unit_id' or 'ts_pub' or 'ts_app'");
+        mp_fail();
         return;
     }
     if (window.ts_width == null) {
