@@ -1,5 +1,5 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
-var TS_VERSION = "1.0.2";
+var TS_VERSION = "1.0.3";
 
 var ts_click_tracker;
 var paramMap = {};
