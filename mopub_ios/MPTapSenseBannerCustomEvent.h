@@ -1,14 +1,11 @@
 //
 //  MPTapSenseBannerCustomEvent.h
-//  TapSense
-//
 //  Copyright (c) 2014 TapSense. All rights reserved.
 //
 
 #import "MPBannerCustomEvent.h"
-#import <TapSenseAds/TSAdView.h>
-#import <TapSenseAds/TapSenseAds.h>
+#import <TapSenseAds/TapSenseAdView.h>
 
-@interface MPTapSenseBannerCustomEvent : MPBannerCustomEvent <TSAdViewDelegate>
+@interface MPTapSenseBannerCustomEvent : MPBannerCustomEvent <TapSenseAdViewDelegate>
 
 @end

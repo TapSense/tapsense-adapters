@@ -1,87 +1,71 @@
 //
 //  GADTapSenseBannerCustomEvent.m
-//  TapSense
-//
 //  Copyright (c) 2014 TapSense. All rights reserved.
 //
 
 #import "GADTapSenseBannerCustomEvent.h"
+#import <TapSenseAds/TapSenseAds.h>
 
 @interface GADTapSenseBannerCustomEvent ()
 
-@property (nonatomic, retain) TSAdView *adBannerView;
+@property (nonatomic, retain) TapSenseAdView *adBannerView;
 
 @end
 
 
 @implementation GADTapSenseBannerCustomEvent
 
-@synthesize delegate = delegate_;
+@synthesize delegate = _delegate;
 
-
-- (id)init
-{
-    self = [super init];
-    if (self)
-    {
-        //ad view is initalized in request
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    self.delegate = nil;
-    self.adBannerView.delegate = nil;
-    self.adBannerView = nil;
-}
+#pragma mark - GADCustomEventBanner Protocol Methods
 
 - (void)requestBannerAd:(GADAdSize)adSize
               parameter:(NSString *)serverParameter
                   label:(NSString *)serverLabel
-                request:(GADCustomEventRequest *)request
-{
+                request:(GADCustomEventRequest *)request {
     NSError *error = nil;
     NSDictionary *info =
     [NSJSONSerialization JSONObjectWithData: [serverParameter dataUsingEncoding:NSUTF8StringEncoding]
                                     options: NSJSONReadingMutableContainers
                                       error: &error];
-    NSString *pubId = [info objectForKey:@"pubId"] ? [info objectForKey:@"pubId"] : @"";
-    NSString *appId = [info objectForKey:@"appId"] ? [info objectForKey:@"appId"] : @"";
-    NSString *secretKey = [info objectForKey:@"secretKey"] ? [info objectForKey:@"secretKey"] : @"";
     NSString *adUnitId = [info objectForKey:@"adUnitId"] ? [info objectForKey:@"adUnitId"] : @"";
-    [TapSenseAds disableGetNextAd];
 
-    //change test mode to NO before submitting to App Store.
-    [TapSenseAds startInTestMode:YES withPubId:pubId appId:appId secretKey:secretKey];
-    self.adBannerView = [[TSAdView alloc] initWithAdUnitId:adUnitId size:adSize.size];
+    // Remove test mode before going live and submitting to App Store
+    [TapSenseAds setTestMode];
+
+    self.adBannerView = [[TapSenseAdView alloc] initWithAdUnitId:adUnitId];
+    self.adBannerView.frame = CGRectMake(0, 0, adSize.size.width, adSize.size.height);
     self.adBannerView.rootViewController = self.delegate.viewControllerForPresentingModalView;
     self.adBannerView.delegate = self;
     [self.adBannerView loadAd];
 }
 
-#pragma mark -
-#pragma mark TSAdViewDelegate methods
+#pragma mark - Lifecycle
 
-- (void) adViewDidLoadAd:(TSAdView *)view
-{
+- (void)dealloc {
+    self.delegate = nil;
+    self.adBannerView.delegate = nil;
+    self.adBannerView = nil;
+}
+
+#pragma mark - TapSenseAdViewDelegate methods
+
+- (void) adViewDidLoadAd:(TapSenseAdView *)view {
     [self.delegate customEventBanner:self didReceiveAd:view];
 }
 
-- (void) adViewDidFailToLoad:(TSAdView *)view
-{
-    [self.delegate customEventBanner:self didFailAd:nil];
+- (void) adViewDidFailToLoad:(TapSenseAdView *)view withError:(NSError *)error{
+    [self.delegate customEventBanner:self didFailAd:error];
 }
 
-- (void) adViewWillPresentModalView:(TSAdView *)view
-{
+- (void) adViewWillPresentModalView:(TapSenseAdView *)view {
     [self.delegate customEventBannerWillPresentModal:self];
 }
 
-- (void) adViewDidDismissModalView:(TSAdView *)view
-{
+- (void) adViewDidDismissModalView:(TapSenseAdView *)view {
     [self.delegate customEventBannerWillDismissModal:self];
     [self.delegate customEventBannerDidDismissModal:self];
 }
+
 
 @end

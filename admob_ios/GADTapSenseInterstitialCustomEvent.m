@@ -1,72 +1,72 @@
 //
 //  GADTapSenseInterstitialCustomEvent.m
-//  TapSense
-//
 //  Copyright (c) 2014 TapSense, Inc. All rights reserved.
 //
 
 #import "GADTapSenseInterstitialCustomEvent.h"
+#import <TapSenseAds/TapSenseAds.h>
+
+@interface GADTapSenseInterstitialCustomEvent ()
+
+@property (nonatomic, retain) TapSenseInterstitial *interstitial;
+
+@end
+
 
 @implementation GADTapSenseInterstitialCustomEvent
 
-@synthesize delegate = delegate_;
+@synthesize delegate = _delegate;
 
 #pragma mark - GADCustomEventInterstitial Protocol Methods
 
 - (void)requestInterstitialAdWithParameter:(NSString *)serverParameter
                                      label:(NSString *)serverLabel
-                                   request:(GADCustomEventRequest *)request
-{
+                                   request:(GADCustomEventRequest *)request {
     NSError *error = nil;
     NSDictionary *info =
     [NSJSONSerialization JSONObjectWithData: [serverParameter dataUsingEncoding:NSUTF8StringEncoding]
                                     options: NSJSONReadingMutableContainers
                                       error: &error];
-    NSString *pubId = [info objectForKey:@"pubId"] ? [info objectForKey:@"pubId"] : @"";
-    NSString *appId = [info objectForKey:@"appId"] ? [info objectForKey:@"appId"] : @"";
-    NSString *secretKey = [info objectForKey:@"secretKey"] ? [info objectForKey:@"secretKey"] : @"";
-    BOOL videoOnly = [info objectForKey:@"videoOnly"] ? [[info objectForKey:@"videoOnly"] boolValue] : NO;
-    BOOL adFlowOnly = [info objectForKey:@"adFlowOnly"] ? [[info objectForKey:@"adFlowOnly"] boolValue] : NO;
-    [TapSenseAds disableGetNextAd];
-    [TapSenseAds enableAdFlowOnly:adFlowOnly];
-    [TapSenseAds enableVideoOnly:videoOnly];
+    NSString *adUnitId = [info objectForKey:@"adUnitId"] ? [info objectForKey:@"adUnitId"] : @"";
 
-    //change test mode to NO before submitting to App Store.
-    [TapSenseAds startInTestMode:YES withPubId:pubId appId:appId secretKey:secretKey];
-    [TapSenseAds sharedInstance].delegate = self;
-    [[TapSenseAds sharedInstance] requestAd];
+    // Remove test mode before going live and submitting to App Store
+    [TapSenseAds setTestMode];
+
+    self.interstitial = [[TapSenseInterstitial alloc] initWithAdUnitId:adUnitId shouldAutoRequestAd:NO];
+    self.interstitial.delegate = self;
+    [self.interstitial requestAd];
 }
 
-- (void)presentFromRootViewController:(UIViewController *)rootViewController;
-{
-    [[TapSenseAds sharedInstance] showAdFromViewController:rootViewController];
+- (void)presentFromRootViewController:(UIViewController *)rootViewController; {
+    if (self.interstitial.isReady) {
+        [self.interstitial showAdFromViewController:rootViewController];
+    }
 }
 
-- (void)dealloc
-{
+#pragma mark - Lifecycle
+
+- (void)dealloc {
     self.delegate = nil;
-    [TapSenseAds sharedInstance].delegate = nil;
+    self.interstitial.delegate = nil;
+    self.interstitial = nil;
 }
 
-#pragma mark - TapSenseAdsDelegate
+#pragma mark - TapSenseInterstitialDelegate methods
 
-- (void) tapSenseDidLoadAd
-{
+- (void)interstitialDidLoad:(TapSenseInterstitial*)interstitial {
     [self.delegate customEventInterstitial:self didReceiveAd:nil];
 }
 
-- (void) tapSenseDidFailToLoadAdWithError:(NSError *)error
-{
+- (void)interstitialDidFailToLoad:(TapSenseInterstitial*)interstitial
+                        withError:(NSError*)error {
     [self.delegate customEventInterstitial:self didFailAd:error];
 }
 
-- (void) tapSenseAdWillAppear
-{
+- (void)interstitialWillAppear:(TapSenseInterstitial*)interstitial {
     [self.delegate customEventInterstitialWillPresent:self];
 }
 
-- (void) tapSenseAdDidDisappear
-{
+- (void)interstitialDidDisappear:(TapSenseInterstitial*)interstitial {
     [self.delegate customEventInterstitialWillDismiss:self];
     [self.delegate customEventInterstitialDidDismiss:self];
 }
