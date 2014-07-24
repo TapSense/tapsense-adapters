@@ -7,7 +7,8 @@
 
 #import "MPInterstitialCustomEvent.h"
 #import <TapSenseAds/TapSenseAds.h>
+#import <TapSenseAds/TapSenseInterstitial.h>
 
-@interface MPTapSenseInterstitialCustomEvent : MPInterstitialCustomEvent <TapSenseAdsDelegate>
+@interface MPTapSenseInterstitialCustomEvent : MPInterstitialCustomEvent <TapSenseInterstitialDelegate>
 
 @end

@@ -13,24 +13,15 @@
 
 - (void)requestInterstitialWithCustomEventInfo:(NSDictionary *)info
 {
-    NSString *pubId = [info objectForKey:@"pubId"] ? [info objectForKey:@"pubId"] : @"";
-    NSString *appId = [info objectForKey:@"appId"] ? [info objectForKey:@"appId"] : @"";
-    NSString *secretKey = [info objectForKey:@"secretKey"] ? [info objectForKey:@"secretKey"] : @"";
-    BOOL videoOnly = [info objectForKey:@"videoOnly"] ? [[info objectForKey:@"videoOnly"] boolValue] : NO;
-    BOOL adFlowOnly = [info objectForKey:@"adFlowOnly"] ? [[info objectForKey:@"adFlowOnly"] boolValue] : NO;
-    [TapSenseAds disableGetNextAd];
-    [TapSenseAds enableAdFlowOnly:adFlowOnly];
-    [TapSenseAds enableVideoOnly:videoOnly];
-    
-    //change test mode to NO before submitting to App Store.
-    [TapSenseAds startInTestMode:YES withPubId:pubId appId:appId secretKey:secretKey];
-    [TapSenseAds sharedInstance].delegate = self;
-    [[TapSenseAds sharedInstance] requestAd];
+//
+//    //change test mode to NO before submitting to App Store.
+//    [TapSenseAds sharedInstance].delegate = self;
+//    [[TapSenseAds sharedInstance] requestAd];
 }
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController
 {
-    [[TapSenseAds sharedInstance] showAdFromViewController:rootViewController];
+//    [[TapSenseAds sharedInstance] showAdFromViewController:rootViewController];
 }
 
 #pragma mark - TapSenseAdsDelegate
