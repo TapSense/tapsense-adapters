@@ -6,44 +6,59 @@
 //
 
 #import "MPTapSenseInterstitialCustomEvent.h"
+#import <TapSenseAds/TapSenseAds.h>
+
+@interface MPTapSenseInterstitialCustomEvent ()
+
+@property (nonatomic, retain) TapSenseInterstitial *interstitial;
+
+@end
+
 
 @implementation MPTapSenseInterstitialCustomEvent
 
+- (void)dealloc {
+    self.delegate = nil;
+    self.interstitial.delegate = nil;
+    self.interstitial = nil;
+}
+
 #pragma mark - MPInterstitialCustomEvent Subclass Methods
 
-- (void)requestInterstitialWithCustomEventInfo:(NSDictionary *)info
-{
-//
-//    //change test mode to NO before submitting to App Store.
-//    [TapSenseAds sharedInstance].delegate = self;
-//    [[TapSenseAds sharedInstance] requestAd];
+- (void)requestInterstitialWithCustomEventInfo:(NSDictionary *)info {
+    NSString *adUnitId = [info objectForKey:@"adUnitId"] ? [info objectForKey:@"adUnitId"] : @"";
+
+    // Remove test mode before going live and submitting to App Store
+    [TapSenseAds setTestMode];
+
+    self.interstitial = [[TapSenseInterstitial alloc] initWithAdUnitId:adUnitId shouldAutoRequestAd:NO];
+    self.interstitial.delegate = self;
+    [self.interstitial requestAd];
 }
 
-- (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController
-{
-//    [[TapSenseAds sharedInstance] showAdFromViewController:rootViewController];
+- (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController {
+    if (self.interstitial.isReady) {
+        [self.interstitial showAdFromViewController:rootViewController];
+    }
 }
 
-#pragma mark - TapSenseAdsDelegate
+#pragma mark - TapSenseInterstitialDelegate methods
 
-- (void) tapSenseDidLoadAd
-{
+- (void)interstitialDidLoad:(TapSenseInterstitial*)interstitial {
     [self.delegate interstitialCustomEvent:self didLoadAd:self];
 }
 
-- (void) tapSenseDidFailToLoadAdWithError:(NSError *)error
-{
+- (void)interstitialDidFailToLoad:(TapSenseInterstitial*)interstitial
+                        withError:(NSError*)error {
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
-- (void) tapSenseAdWillAppear
-{
+- (void)interstitialWillAppear:(TapSenseInterstitial*)interstitial {
     [self.delegate interstitialCustomEventWillAppear:self];
     [self.delegate interstitialCustomEventDidAppear:self];
 }
 
-- (void) tapSenseAdDidDisappear
-{
+- (void)interstitialDidDisappear:(TapSenseInterstitial*)interstitial {
     [self.delegate interstitialCustomEventWillDisappear:self];
     [self.delegate interstitialCustomEventDidDisappear:self];
 }

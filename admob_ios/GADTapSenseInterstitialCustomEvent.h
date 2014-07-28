@@ -6,8 +6,8 @@
 //
 
 #import "GADCustomEventInterstitial.h"
-#import <TapSenseAds/TapSenseAds.h>
+#import <TapSenseAds/TapSenseInterstitial.h>
 
-@interface GADTapSenseInterstitialCustomEvent : NSObject <TapSenseAdsDelegate, GADCustomEventInterstitial>
+@interface GADTapSenseInterstitialCustomEvent : NSObject <TapSenseInterstitialDelegate, GADCustomEventInterstitial>
 
 @end

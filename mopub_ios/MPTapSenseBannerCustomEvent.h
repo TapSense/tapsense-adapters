@@ -7,7 +7,6 @@
 
 #import "MPBannerCustomEvent.h"
 #import <TapSenseAds/TapSenseAdView.h>
-#import <TapSenseAds/TapSenseAds.h>
 
 @interface MPTapSenseBannerCustomEvent : MPBannerCustomEvent <TapSenseAdViewDelegate>
 

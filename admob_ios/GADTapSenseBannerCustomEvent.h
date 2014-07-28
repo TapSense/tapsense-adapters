@@ -6,9 +6,8 @@
 //
 
 #import "GADCustomEventBanner.h"
-#import <TapSenseAds/TSAdView.h>
-#import <TapSenseAds/TapSenseAds.h>
+#import <TapSenseAds/TapSenseAdView.h>
 
-@interface GADTapSenseBannerCustomEvent : NSObject <TSAdViewDelegate, GADCustomEventBanner>
+@interface GADTapSenseBannerCustomEvent : NSObject <TapSenseAdViewDelegate, GADCustomEventBanner>
 
 @end

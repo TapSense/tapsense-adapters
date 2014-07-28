@@ -17,31 +17,20 @@
 
 @implementation MPTapSenseBannerCustomEvent
 
-- (id)init
-{
-    self = [super init];
-    if (self)
-    {
-        //ad view is initalized in request
-    }
-    return self;
-}
-
-- (void)dealloc
-{
+- (void)dealloc {
+    self.delegate = nil;
     self.adBannerView.delegate = nil;
     self.adBannerView = nil;
 }
 
-- (void)requestAdWithSize:(CGSize)size customEventInfo:(NSDictionary *)info
-{
+#pragma mark - MPBannerCustomEvent methods
 
+- (void)requestAdWithSize:(CGSize)size customEventInfo:(NSDictionary *)info {
     NSString *adUnitId = [info objectForKey:@"adUnitId"] ? [info objectForKey:@"adUnitId"] : @"";
+
+    // Remove test mode before going live and submitting to App Store
     [TapSenseAds setTestMode];
 
-    [TapSenseAds enableDebugLog:YES];
-    
-    //change test mode to NO before submitting to App Store.
     self.adBannerView = [[TapSenseAdView alloc] initWithAdUnitId:adUnitId];
     self.adBannerView.frame = CGRectMake(0, 0, size.width, size.height);
     self.adBannerView.rootViewController = [self.delegate viewControllerForPresentingModalView];
@@ -49,32 +38,22 @@
     [self.adBannerView loadAd];
 }
 
-#pragma mark -
-#pragma mark TSAdViewDelegate methods
+#pragma mark - TSAdViewDelegate methods
 
-- (void) adViewDidLoadAd:(TapSenseAdView *)view
-{
+- (void) adViewDidLoadAd:(TapSenseAdView *)view {
     [self.delegate bannerCustomEvent:self didLoadAd:self.adBannerView];
 }
 
-- (void) adViewDidFailToLoad:(TapSenseAdView *)view
-{
+- (void) adViewDidFailToLoad:(TapSenseAdView *)view {
     [self.delegate bannerCustomEvent:self didFailToLoadAdWithError:nil];
 }
 
-- (void) adViewWillPresentModalView:(TapSenseAdView *)view
-{
+- (void) adViewWillPresentModalView:(TapSenseAdView *)view {
     [self.delegate bannerCustomEventWillBeginAction:self];
 }
 
-- (void) adViewDidDismissModalView:(TapSenseAdView *)view
-{
+- (void) adViewDidDismissModalView:(TapSenseAdView *)view {
     [self.delegate bannerCustomEventDidFinishAction:self];
-}
-
-- (void) adViewWillLeaveApplication:(TapSenseAdView *)view
-{
-    [self.delegate bannerCustomEventWillLeaveApplication:self];
 }
 
 @end
