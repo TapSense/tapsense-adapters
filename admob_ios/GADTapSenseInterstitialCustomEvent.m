@@ -1,7 +1,5 @@
 //
 //  GADTapSenseInterstitialCustomEvent.m
-//  TapSense
-//
 //  Copyright (c) 2014 TapSense, Inc. All rights reserved.
 //
 

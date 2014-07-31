@@ -1,7 +1,5 @@
 //
 //  MPTapSenseBannerCustomEvent.h
-//  TapSense
-//
 //  Copyright (c) 2014 TapSense. All rights reserved.
 //
 

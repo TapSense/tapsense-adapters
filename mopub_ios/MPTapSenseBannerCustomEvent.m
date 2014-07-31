@@ -1,7 +1,5 @@
 //
 //  MPTapSenseBannerCustomEvent.m
-//  TapSense
-//
 //  Copyright (c) 2014 TapSense. All rights reserved.
 //
 
@@ -44,8 +42,8 @@
     [self.delegate bannerCustomEvent:self didLoadAd:self.adBannerView];
 }
 
-- (void) adViewDidFailToLoad:(TapSenseAdView *)view {
-    [self.delegate bannerCustomEvent:self didFailToLoadAdWithError:nil];
+- (void) adViewDidFailToLoad:(TapSenseAdView *)view withError:(NSError *)error{
+    [self.delegate bannerCustomEvent:self didFailToLoadAdWithError:error];
 }
 
 - (void) adViewWillPresentModalView:(TapSenseAdView *)view {
