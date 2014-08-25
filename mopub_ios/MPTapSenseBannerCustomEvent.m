@@ -12,14 +12,7 @@
 
 @end
 
-
 @implementation MPTapSenseBannerCustomEvent
-
-- (void)dealloc {
-    self.delegate = nil;
-    self.adBannerView.delegate = nil;
-    self.adBannerView = nil;
-}
 
 #pragma mark - MPBannerCustomEvent methods
 
@@ -34,6 +27,12 @@
     self.adBannerView.rootViewController = [self.delegate viewControllerForPresentingModalView];
     self.adBannerView.delegate = self;
     [self.adBannerView loadAd];
+}
+
+- (void)dealloc {
+    self.delegate = nil;
+    self.adBannerView.delegate = nil;
+    self.adBannerView = nil;
 }
 
 #pragma mark - TSAdViewDelegate methods

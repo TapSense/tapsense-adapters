@@ -15,13 +15,7 @@
 
 @implementation GADTapSenseInterstitialCustomEvent
 
-@synthesize delegate = delegate_;
-
-- (void)dealloc {
-    self.delegate = nil;
-    self.interstitial.delegate = nil;
-    self.interstitial = nil;
-}
+@synthesize delegate = _delegate;
 
 #pragma mark - GADCustomEventInterstitial Protocol Methods
 
@@ -47,6 +41,12 @@
     if (self.interstitial.isReady) {
         [self.interstitial showAdFromViewController:rootViewController];
     }
+}
+
+- (void)dealloc {
+    self.delegate = nil;
+    self.interstitial.delegate = nil;
+    self.interstitial = nil;
 }
 
 #pragma mark - TapSenseInterstitialDelegate methods

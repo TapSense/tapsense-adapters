@@ -15,12 +15,6 @@
 
 @implementation MPTapSenseInterstitialCustomEvent
 
-- (void)dealloc {
-    self.delegate = nil;
-    self.interstitial.delegate = nil;
-    self.interstitial = nil;
-}
-
 #pragma mark - MPInterstitialCustomEvent Subclass Methods
 
 - (void)requestInterstitialWithCustomEventInfo:(NSDictionary *)info {
@@ -38,6 +32,12 @@
     if (self.interstitial.isReady) {
         [self.interstitial showAdFromViewController:rootViewController];
     }
+}
+
+- (void)dealloc {
+    self.delegate = nil;
+    self.interstitial.delegate = nil;
+    self.interstitial = nil;
 }
 
 #pragma mark - TapSenseInterstitialDelegate methods

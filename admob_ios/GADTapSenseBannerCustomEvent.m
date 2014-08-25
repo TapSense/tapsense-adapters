@@ -15,13 +15,7 @@
 
 @implementation GADTapSenseBannerCustomEvent
 
-@synthesize delegate = delegate_;
-
-- (void)dealloc {
-    self.delegate = nil;
-    self.adBannerView.delegate = nil;
-    self.adBannerView = nil;
-}
+@synthesize delegate = _delegate;
 
 #pragma mark - GADCustomEventBanner Protocol Methods
 
@@ -46,6 +40,12 @@
     [self.adBannerView loadAd];
 }
 
+- (void)dealloc {
+    self.delegate = nil;
+    self.adBannerView.delegate = nil;
+    self.adBannerView = nil;
+}
+
 #pragma mark - TapSenseAdViewDelegate methods
 
 - (void) adViewDidLoadAd:(TapSenseAdView *)view {
@@ -64,5 +64,6 @@
     [self.delegate customEventBannerWillDismissModal:self];
     [self.delegate customEventBannerDidDismissModal:self];
 }
+
 
 @end
