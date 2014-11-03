@@ -1,5 +1,5 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
-var TS_VERSION = "1.0.4";
+var TS_VERSION = "1.0.5";
 
 var ts_click_tracker;
 var paramMap = {};
@@ -49,27 +49,34 @@ function ts_callback(data) {
 }
 
 function getServerUrl() {
-    var unique_function_id = generateRandomKey();
-    addParameter("ad_unit_id", window.ts_ad_unit_id);
-    addParameter("pub", window.ts_pub);
-    addParameter("app", window.ts_app);
-    addParameter("ufid", unique_function_id);
+    addParameter("ufid", generateRandomKey());
     addParameter("refer", window.location);
-    if (window.ts_width && window.ts_height) {
-        addParameter("size", window.ts_width + "x" + window.ts_height);
-    }
-    addParameter("keywords", window.ts_keywords);
     addParameter("version", TS_VERSION);
     addParameter("jsonp", 1);
     addParameter("callback", "ts_callback")
-    addParameter("test", window.ts_test);
+
+    var parameters = Object.keys(window);
+    for (index in parameters) {
+        var ts_param = parameters[index].match(/^ts_(.*)/);
+        if (ts_param) {
+            var value = window[ts_param[0]];
+            if (typeof value === "function") {
+                continue;
+            }
+            addParameter(ts_param[1], value);
+        }
+    }
+    if (window.bundle_id) {
+        addParameter("bundle_id", window.bundle_id);
+    }
+    if (window.ts_width && window.ts_height) {
+        addParameter("size", window.ts_width + "x" + window.ts_height);
+    }
     if (window.ts_device_id) {
         addParameter("user", window.ts_device_id);
     } else {
         addParameter("session_id", getSession());
     }
-    addParameter("banner_ad", window.ts_banner_ad);
-    addParameter("video_ad", window.ts_video_ad);
     if (typeof mopubFinishLoad == 'function') {
         addParameter("mr", 0);
     } else {
