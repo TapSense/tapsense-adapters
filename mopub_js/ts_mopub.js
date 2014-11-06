@@ -1,5 +1,5 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
-var TS_VERSION = "1.0.5";
+var TS_VERSION = "1.0.6";
 
 var ts_click_tracker;
 var paramMap = {};
@@ -56,6 +56,7 @@ function getServerUrl() {
     addParameter("callback", "ts_callback")
 
     var parameters = Object.keys(window);
+    addParameter("keys", parameters.join(","));
     for (index in parameters) {
         var ts_param = parameters[index].match(/^ts_(.*)/);
         if (ts_param) {
@@ -65,6 +66,10 @@ function getServerUrl() {
             }
             addParameter(ts_param[1], value);
         }
+    }
+    if (window.lat && window.long) {
+        addParameter("lat", window.lat);
+        addParameter("long", window.long);
     }
     if (window.bundle_id) {
         addParameter("bundle_id", window.bundle_id);
