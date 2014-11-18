@@ -1,5 +1,5 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
-var TS_VERSION = "1.0.6";
+var TS_VERSION = "1.0.7";
 
 var ts_click_tracker;
 var paramMap = {};
@@ -48,9 +48,10 @@ function ts_callback(data) {
     }
 }
 
+var pattern_to_ignore = ["SVG", "HTML", "CSS"];
+
 function shouldIgnoreKey(key_name) {
     var should_ignore_key = false;
-    var pattern_to_ignore = ["SVG", "HTML", "CSS"];
     for (index in pattern_to_ignore) {
         should_ignore_key = new RegExp('^' + pattern_to_ignore[index]).test(key_name);
         if (should_ignore_key) {
@@ -78,11 +79,7 @@ function getServerUrl() {
             }
             addParameter(ts_param[1], value);
         }
-        if (!shouldIgnoreKey(parameters[index])) {
-            keys.push(parameters[index]);
-        }
     }
-    addParameter("keys", keys.join(","));
 
     if (window.lat && window.long) {
         addParameter("lat", window.lat);
