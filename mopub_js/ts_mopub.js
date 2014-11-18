@@ -48,6 +48,18 @@ function ts_callback(data) {
     }
 }
 
+function shouldIgnoreKey(key_name) {
+    var should_ignore_key = false;
+    var pattern_to_ignore = ["SVG", "HTML", "CSS"];
+    for (index in pattern_to_ignore) {
+        should_ignore_key = new RegExp('^' + pattern_to_ignore[index]).test(key_name);
+        if (should_ignore_key) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function getServerUrl() {
     addParameter("ufid", generateRandomKey());
     addParameter("refer", window.location);
@@ -56,7 +68,7 @@ function getServerUrl() {
     addParameter("callback", "ts_callback")
 
     var parameters = Object.keys(window);
-    addParameter("keys", parameters.join(","));
+    var keys = [];
     for (index in parameters) {
         var ts_param = parameters[index].match(/^ts_(.*)/);
         if (ts_param) {
@@ -66,7 +78,12 @@ function getServerUrl() {
             }
             addParameter(ts_param[1], value);
         }
+        if (!shouldIgnoreKey(parameters[index])) {
+            keys.push(parameters[index]);
+        }
     }
+    addParameter("keys", keys.join(","));
+
     if (window.lat && window.long) {
         addParameter("lat", window.lat);
         addParameter("long", window.long);
