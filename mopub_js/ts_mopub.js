@@ -1,5 +1,5 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
-var TS_VERSION = "1.0.7";
+var TS_VERSION = "1.0.8";
 
 var ts_click_tracker;
 var paramMap = {};
@@ -69,7 +69,6 @@ function getServerUrl() {
     addParameter("callback", "ts_callback")
 
     var parameters = Object.keys(window);
-    var keys = [];
     for (index in parameters) {
         var ts_param = parameters[index].match(/^ts_(.*)/);
         if (ts_param) {
@@ -101,7 +100,19 @@ function getServerUrl() {
     } else {
         addParameter("mr", 1);
     }
+    if (mraid) {
+        addParameter("mraid_versions", getMraidVersions());
+    }
     return TS_SERVER_HOST + "?" + getSerializedParams();
+}
+
+function getMraidVersions() {
+    var version = parseInt(mraid.getVersion());
+    var versions = [];
+    for (var i = version; i > 0; i--) {
+        versions.push("mraid_"+i);
+    }
+    return versions.join(",");
 }
 
 function generateRandomKey() {
