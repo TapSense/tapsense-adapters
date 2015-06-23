@@ -63,9 +63,7 @@
 }
 
 - (void) adViewDidDismissModalView:(TapSenseAdView *)view {
-    [self.delegate customEventBannerWillDismissModal:self];
     [self.delegate customEventBannerDidDismissModal:self];
 }
-
 
 @end

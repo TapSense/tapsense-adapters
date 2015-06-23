@@ -54,7 +54,7 @@
 #pragma mark - TapSenseInterstitialDelegate methods
 
 - (void)interstitialDidLoad:(TapSenseInterstitial*)interstitial {
-    [self.delegate customEventInterstitial:self didReceiveAd:nil];
+    [self.delegate customEventInterstitialDidReceiveAd:self];
 }
 
 - (void)interstitialDidFailToLoad:(TapSenseInterstitial*)interstitial
@@ -67,7 +67,6 @@
 }
 
 - (void)interstitialDidDisappear:(TapSenseInterstitial*)interstitial {
-    [self.delegate customEventInterstitialWillDismiss:self];
     [self.delegate customEventInterstitialDidDismiss:self];
 }
 
