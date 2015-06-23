@@ -3,7 +3,7 @@
 //  Copyright (c) 2014 TapSense, Inc. All rights reserved.
 //
 
-#import "GADCustomEventInterstitial.h"
+@import GoogleMobileAds;
 #import <TapSenseAds/TapSenseInterstitial.h>
 
 @interface GADTapSenseInterstitialCustomEvent : NSObject <TapSenseInterstitialDelegate, GADCustomEventInterstitial>

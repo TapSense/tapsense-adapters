@@ -3,11 +3,13 @@ package com.tapsense.adapters;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
 
-import com.google.ads.mediation.MediationAdRequest;
-import com.google.ads.mediation.customevent.CustomEventInterstitial;
-import com.google.ads.mediation.customevent.CustomEventInterstitialListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.mediation.MediationAdRequest;
+import com.google.android.gms.ads.mediation.customevent.CustomEventInterstitial;
+import com.google.android.gms.ads.mediation.customevent.CustomEventInterstitialListener;
 import com.tapsense.android.publisher.TSErrorCode;
 import com.tapsense.android.publisher.TSKeywordMap;
 import com.tapsense.android.publisher.TapSenseAds;
@@ -20,11 +22,14 @@ public class TapSenseAdMobInterstitialAdapter implements
   private CustomEventInterstitialListener mInterstitialListener;
   private TapSenseInterstitial mInterstitial;
 
+  /**
+   * {@link CustomEventInterstitial} methods
+   */
+
   @Override
-  public void requestInterstitialAd(
-      final CustomEventInterstitialListener listener, final Activity activity,
-      String label, String serverParameter,
-      MediationAdRequest mediationAdRequest, Object extra) {
+  public void requestInterstitialAd(Context context,
+      CustomEventInterstitialListener listener, String serverParameter,
+      MediationAdRequest mediationAdRequest, Bundle customEventExtras) {
     try {
       // Remove test mode before going live and submitting to Play Store
       TapSenseAds.setTestMode();
@@ -33,13 +38,13 @@ public class TapSenseAdMobInterstitialAdapter implements
 
       JSONObject serverParameterJson = new JSONObject(serverParameter);
 
-      mInterstitial = new TapSenseInterstitial(activity,
+      mInterstitial = new TapSenseInterstitial(context,
           serverParameterJson.getString("adUnitId"), false,
           TSKeywordMap.EMPTY_TS_KEYWORD_MAP);
       mInterstitial.setListener(this);
       mInterstitial.requestAd();
     } catch (JSONException e) {
-      listener.onFailedToReceiveAd();
+      listener.onAdFailedToLoad(AdRequest.ERROR_CODE_INVALID_REQUEST);
     }
   }
 
@@ -51,16 +56,34 @@ public class TapSenseAdMobInterstitialAdapter implements
   }
 
   @Override
-  public void destroy() {
+  public void onDestroy() {
     if (mInterstitial != null) {
       mInterstitial.destroy();
     }
   }
 
   @Override
+  public void onPause() {
+
+  }
+
+  @Override
+  public void onResume() {
+
+  }
+
+  /**
+   * {@link TapSenseInterstitialListener} methods
+   * 
+   * Note: {@link TapSenseInterstitialListener} does not have an equivalent of
+   * {@link CustomEventInterstitialListener#onAdClicked} or
+   * {@link CustomEventInterstitialListener#onAdLeftApplication}
+   */
+
+  @Override
   public void onInterstitialLoaded(TapSenseInterstitial interstitial) {
     if (mInterstitialListener != null) {
-      mInterstitialListener.onReceivedAd();
+      mInterstitialListener.onAdLoaded();
     }
 
   }
@@ -69,21 +92,38 @@ public class TapSenseAdMobInterstitialAdapter implements
   public void onInterstitialFailedToLoad(TapSenseInterstitial interstitial,
       TSErrorCode errorCode) {
     if (mInterstitialListener != null) {
-      mInterstitialListener.onFailedToReceiveAd();
+      switch (errorCode) {
+      case INVALID_AD_SIZE:
+      case INVALID_AD_UNIT_ID:
+        mInterstitialListener
+            .onAdFailedToLoad(AdRequest.ERROR_CODE_INVALID_REQUEST);
+        break;
+      case NO_FILL:
+        mInterstitialListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
+        break;
+      case NO_INTERNET:
+        mInterstitialListener
+            .onAdFailedToLoad(AdRequest.ERROR_CODE_NETWORK_ERROR);
+        break;
+      default:
+        mInterstitialListener
+            .onAdFailedToLoad(AdRequest.ERROR_CODE_INTERNAL_ERROR);
+        break;
+      }
     }
   }
 
   @Override
   public void onInterstitialShown(TapSenseInterstitial interstitial) {
     if (mInterstitialListener != null) {
-      mInterstitialListener.onPresentScreen();
+      mInterstitialListener.onAdOpened();
     }
   }
 
   @Override
   public void onInterstitialDismissed(TapSenseInterstitial interstitial) {
     if (mInterstitialListener != null) {
-      mInterstitialListener.onDismissScreen();
+      mInterstitialListener.onAdClosed();
     }
   }
 
