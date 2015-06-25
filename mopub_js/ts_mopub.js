@@ -1,9 +1,9 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
-var TS_VERSION = "1.0.8";
+var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
+var TS_AD_RESPONSE_COOKIE_NAME = "ts-ad-response-cookie-" + window.ts_ad_unit_id;
+var TS_VERSION = "1.0.9";
 
-var ts_click_tracker;
 var paramMap = {};
-var cookie_name = "ts-sesssion-cookie";
 
 function addParameter(key, value) {
     if (value) {
@@ -36,7 +36,14 @@ function ts_callback(data) {
     document.write(data.ad_units[0].html_vertical);
     document.write('</div>');
 
+    if (isInterstitial(data.width, data.height)) {
+        var fiveMinutesFromNow = new Date((new Date()).getTime() + 5*60000);
+        setCookie(TS_AD_RESPONSE_COOKIE_NAME, btoa(JSON.stringify(data)), fiveMinutesFromNow);
+    }
+
     window.webviewDidAppearHelper = function() {
+        deleteCookie(TS_AD_RESPONSE_COOKIE_NAME);
+
         var img = document.createElement('img');
         img.src = data.ad_units[0].imp_url;
         img.width = 0;
@@ -46,6 +53,13 @@ function ts_callback(data) {
         var body = document.getElementsByTagName('body')[0];
         body.appendChild(img);
     }
+}
+
+function isInterstitial(width, height) {
+    return (width == 320 && height == 480) 
+        || (width == 480 && height == 320) 
+        || (width == 768 && height == 1024) 
+        || (width == 1024 && height == 768);
 }
 
 var pattern_to_ignore = ["SVG", "HTML", "CSS"];
@@ -127,11 +141,15 @@ function generateRandomKey() {
 
 function setCookie(name, value, expires, path, domain, secure) {
     var cookie = name + "=" + escape(value) +
-        ((expires) ? ";expires=" + expires.toGMTString() : "") +
+        ((expires) ? ";expires=" + expires.toUTCString() : "") +
         ((path) ? ";path=" + path : "") +
         ((domain) ? ";domain=" + domain : "") +
         ((secure) ? ";secure" : "");
     document.cookie = cookie;
+}
+
+function deleteCookie(name) {
+    setCookie(name, "", new Date(0));
 }
 
 function getCookie(name) {
@@ -152,13 +170,17 @@ function getCookie(name) {
 
 function getSession() {
     //if no session, set it
-    if (!getCookie(cookie_name)) {
-        setCookie(cookie_name, generateRandomKey());
+    if (!getCookie(TS_SESSION_COOKIE_NAME)) {
+        setCookie(TS_SESSION_COOKIE_NAME, generateRandomKey());
     }
-    return getCookie(cookie_name);
+    return getCookie(TS_SESSION_COOKIE_NAME);
 }
 
 (function () {
-    console.log('<script type="text/javascript" src="' + getServerUrl() + '"></s' + 'cript>');
-    document.write('<script type="text/javascript" src="' + getServerUrl() + '"></s' + 'cript>');
+    var adResponseCookie = getCookie(TS_AD_RESPONSE_COOKIE_NAME);
+    if (!adResponseCookie) {
+        document.write('<script type="text/javascript" src="' + getServerUrl() + '"></s' + 'cript>');
+    } else {
+        ts_callback(JSON.parse(atob(adResponseCookie)));
+    }
 })();
