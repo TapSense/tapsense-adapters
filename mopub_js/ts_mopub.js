@@ -100,7 +100,7 @@ function getServerUrl() {
     } else {
         addParameter("mr", 1);
     }
-    if (mraid) {
+    if (typeof mraid !== 'undefined') {
         addParameter("mraid_versions", getMraidVersions());
     }
     return TS_SERVER_HOST + "?" + getSerializedParams();
