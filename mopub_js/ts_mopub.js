@@ -1,7 +1,7 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
 var TS_AD_RESPONSE_COOKIE_NAME = "ts-ad-response-cookie-" + window.ts_ad_unit_id;
-var TS_VERSION = "1.0.9";
+var TS_VERSION = "1.0.10";
 
 var paramMap = {};
 
@@ -37,8 +37,8 @@ function ts_callback(data) {
     document.write('</div>');
 
     if (isInterstitial(data.width, data.height)) {
-        var fiveMinutesFromNow = new Date((new Date()).getTime() + 5*60000);
-        setCookie(TS_AD_RESPONSE_COOKIE_NAME, btoa(JSON.stringify(data)), fiveMinutesFromNow);
+        var twelveHoursFromNow = new Date((new Date()).getTime() + 12*60*60*1000);
+        setCookie(TS_AD_RESPONSE_COOKIE_NAME, btoa(JSON.stringify(data)), twelveHoursFromNow);
     }
 
     window.webviewDidAppearHelper = function() {
