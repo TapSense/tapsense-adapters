@@ -1,6 +1,5 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
-var TS_AD_RESPONSE_COOKIE_NAME = "ts-ad-response-cookie-" + window.ts_ad_unit_id;
 var TS_VERSION = "1.0.10";
 
 var paramMap = {};
@@ -52,17 +51,7 @@ function ts_callback(data) {
     document.write(data.ad_units[0].html_vertical);
     document.write('</div>');
 
-    if (isInterstitial(data.width, data.height)) {
-        var twelveHoursFromNow = new Date((new Date()).getTime() + 12*60*60*1000);
-    }
     fire_impression(data.ad_units[0].imp_url);
-}
-
-function isInterstitial(width, height) {
-    return (width == 320 && height == 480)
-        || (width == 480 && height == 320)
-        || (width == 768 && height == 1024)
-        || (width == 1024 && height == 768);
 }
 
 var pattern_to_ignore = ["SVG", "HTML", "CSS"];
@@ -149,10 +138,6 @@ function setCookie(name, value, expires, path, domain, secure) {
         ((domain) ? ";domain=" + domain : "") +
         ((secure) ? ";secure" : "");
     document.cookie = cookie;
-}
-
-function deleteCookie(name) {
-    setCookie(name, "", new Date(0));
 }
 
 function getCookie(name) {
