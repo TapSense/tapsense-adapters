@@ -1,8 +1,10 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
-var TS_VERSION = "1.0.10";
+var TS_VERSION = "1.0.11";
+var TS_REQUEST_TIMEOUT_MS = 2000;
 
 var paramMap = {};
+var timedOut = false;
 
 function addParameter(key, value) {
     if (value) {
@@ -164,6 +166,42 @@ function getSession() {
     return getCookie(TS_SESSION_COOKIE_NAME);
 }
 
+function ts_getXMLHttpRequest() {
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        return new XMLHttpRequest();
+    } else {
+        // code for IE6, IE5
+        return new ActiveXObject("Microsoft.XMLHTTP");
+    }
+}
+
+function ts_isResponseValid(responseText) {
+    var regex = /ts_callback\((.*)\);/;
+    var resultArray = responseText.match(regex);
+    return resultArray 
+        && resultArray.length === 2 
+        && resultArray[0] 
+        && resultArray[1];
+}
+
 (function () {
-    document.write('<script type="text/javascript" src="' + getServerUrl() + '"></s' + 'cript>');
+    var xmlhttp = ts_getXMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+            if (!timedOut && xmlhttp.status == 200 && ts_isResponseValid(xmlhttp.responseText)) {
+                eval(xmlhttp.responseText);
+            } else {
+                mp_fail();
+            }
+        }
+    };
+    xmlhttp.ontimeout = function() {
+        mp_fail();
+        timedOut = true;
+    };
+    xmlhttp.open("GET", getServerUrl());
+    xmlhttp.timeout = TS_REQUEST_TIMEOUT_MS;
+    xmlhttp.send();
+
 })();
