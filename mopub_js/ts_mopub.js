@@ -1,11 +1,9 @@
 var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
 var TS_AD_RESPONSE_COOKIE_NAME = "ts-ad-response-cookie-" + window.ts_ad_unit_id;
-var TS_VERSION = "1.0.11";
-var TS_REQUEST_TIMEOUT_MS = 2000;
+var TS_VERSION = "1.0.12";
 
 var paramMap = {};
-var timedOut = false;
 
 function addParameter(key, value) {
     if (value) {
@@ -203,19 +201,17 @@ function ts_isResponseValid(responseText) {
         var xmlhttp = ts_getXMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-                if (!timedOut && xmlhttp.status == 200 && ts_isResponseValid(xmlhttp.responseText)) {
+                if (xmlhttp.status == 200 && ts_isResponseValid(xmlhttp.responseText)) {
                     eval(xmlhttp.responseText);
                 } else {
                     mp_fail();
                 }
             }
         };
-        xmlhttp.ontimeout = function() {
+        xmlhttp.onerror = function() {
             mp_fail();
-            timedOut = true;
         };
-        xmlhttp.open("GET", getServerUrl());
-        xmlhttp.timeout = TS_REQUEST_TIMEOUT_MS;
+        xmlhttp.open("GET", getServerUrl(), false);
         xmlhttp.send();
     } else {
         ts_callback(JSON.parse(atob(adResponseCookie)));
