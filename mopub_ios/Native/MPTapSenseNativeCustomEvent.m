@@ -29,7 +29,7 @@
     //TODO: Remove test mode before going live and submitting to App Store
     [TapSenseAds setTestMode];
     
-    NSString *adUnitId = [info objectForKey:@"ad_unit_id"];
+    NSString *adUnitId = [info objectForKey:@"adUnitId"];
 
     if ([adUnitId length]){
         self.tsNativeAd = [[TSNativeAd alloc] initWithAdUnitId:adUnitId];
