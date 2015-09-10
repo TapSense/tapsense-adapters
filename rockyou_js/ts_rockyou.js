@@ -1,6 +1,6 @@
 var TS_SERVER_HOST = "https://ads04.tapsense.com/ads/rockyouad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
-var TS_VERSION = "1.0.15";
+var TS_VERSION = "1.0.16";
 
 var paramMap = {};
 
@@ -48,7 +48,7 @@ function ts_callback(data) {
         return;
     }
     document.write('<div id="ts-div">');
-    document.write(data.ad_units[0].html_vertical.replace('position: fixed;', 'position: absolute;'));
+    document.write(data.ad_units[0].html.replace('position: fixed;', 'position: absolute;'));
     document.write('</div>');
 
     fire_impression(data.ad_units[0].imp_url);
