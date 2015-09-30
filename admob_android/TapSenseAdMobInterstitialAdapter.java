@@ -39,7 +39,7 @@ public class TapSenseAdMobInterstitialAdapter implements
       JSONObject serverParameterJson = new JSONObject(serverParameter);
 
       mInterstitial = new TapSenseInterstitial(context,
-          serverParameterJson.getString("adUnitId"), false,
+          serverParameterJson.getString("ad_unit_id"), false,
           TSKeywordMap.EMPTY_TS_KEYWORD_MAP);
       mInterstitial.setListener(this);
       mInterstitial.requestAd();

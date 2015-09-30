@@ -29,8 +29,8 @@ public class TapSenseMoPubInterstitialAdapter extends CustomEventInterstitial
       return;
     }
 
-    String adUnitId = serverExtras.containsKey("adUnitId") ? serverExtras
-        .get("adUnitId") : "";
+    String adUnitId = serverExtras.containsKey("ad_unit_id") ? serverExtras
+        .get("ad_unit_id") : "";
 
     // Remove test mode before going live and submitting to Play Store
     TapSenseAds.setTestMode();

@@ -15,7 +15,7 @@ import com.tapsense.android.publisher.TapSenseNativeAd.TapSenseNativeAdListener;
  * Tested with TapSense SDK version 2.5.0
  */
 public class TapSenseMoPubNativeAdapter extends CustomEventNative {
-  private static final String AD_UNIT_ID_KEY = "adUnitId";
+  private static final String AD_UNIT_ID_KEY = "ad_unit_id";
 
   // CustomEventNative implementation
   @Override
@@ -24,10 +24,11 @@ public class TapSenseMoPubNativeAdapter extends CustomEventNative {
       final Map<String, Object> localExtras,
       final Map<String, String> serverExtras) {
 
-    TapSenseAds.setShowDebugLog();
-    TapSenseAds.setTestMode();
     String adUnitId = serverExtras.containsKey(AD_UNIT_ID_KEY) ? serverExtras
         .get(AD_UNIT_ID_KEY) : "";
+      
+    // Remove test mode before going live and submitting to Play Store
+    TapSenseAds.setTestMode();
 
     final TapSenseForwardingNativeAd tapSenseForwardingNativeAd = new TapSenseForwardingNativeAd(
         context, new TapSenseNativeAd(context, adUnitId), customEventNativeListener);

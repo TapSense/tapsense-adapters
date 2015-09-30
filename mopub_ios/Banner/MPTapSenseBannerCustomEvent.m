@@ -17,7 +17,7 @@
 #pragma mark - MPBannerCustomEvent methods
 
 - (void)requestAdWithSize:(CGSize)size customEventInfo:(NSDictionary *)info {
-    NSString *adUnitId = [info objectForKey:@"adUnitId"] ? [info objectForKey:@"adUnitId"] : @"";
+    NSString *adUnitId = [info objectForKey:@"ad_unit_id"] ? [info objectForKey:@"ad_unit_id"] : @"";
 
     // Remove test mode before going live and submitting to App Store
     [TapSenseAds setTestMode];

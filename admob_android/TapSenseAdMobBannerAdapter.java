@@ -39,7 +39,7 @@ public class TapSenseAdMobBannerAdapter implements CustomEventBanner,
       JSONObject serverParameterJson = new JSONObject(serverParameter);
 
       mBannerView = new TapSenseAdView(context);
-      mBannerView.setAdUnitId(serverParameterJson.getString("adUnitId"));
+      mBannerView.setAdUnitId(serverParameterJson.getString("ad_unit_id"));
       mBannerView.setAdViewListener(this);
 
       // Load the ad in the background
