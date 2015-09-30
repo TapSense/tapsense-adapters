@@ -11,9 +11,11 @@ import com.tapsense.android.publisher.TapSenseAds;
 import com.tapsense.android.publisher.TapSenseInterstitial;
 import com.tapsense.android.publisher.TapSenseInterstitialListener;
 
-public class TapSenseMoPubInterstitialAdapter extends CustomEventInterstitial
+public class TapSenseMoPubInterstitial extends CustomEventInterstitial
     implements TapSenseInterstitialListener {
 
+  private static final String AD_UNIT_ID_KEY = "ad_unit_id";
+  
   private CustomEventInterstitialListener mInterstitialListener;
   private TapSenseInterstitial mInterstitial;
 
@@ -29,8 +31,8 @@ public class TapSenseMoPubInterstitialAdapter extends CustomEventInterstitial
       return;
     }
 
-    String adUnitId = serverExtras.containsKey("ad_unit_id") ? serverExtras
-        .get("ad_unit_id") : "";
+    String adUnitId = serverExtras.containsKey(AD_UNIT_ID_KEY) ? serverExtras
+        .get(AD_UNIT_ID_KEY) : "";
 
     // Remove test mode before going live and submitting to Play Store
     TapSenseAds.setTestMode();

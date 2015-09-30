@@ -10,9 +10,11 @@ import com.tapsense.android.publisher.TapSenseAdView;
 import com.tapsense.android.publisher.TapSenseAdViewListener;
 import com.tapsense.android.publisher.TapSenseAds;
 
-public class TapSenseMoPubBannerAdapter extends CustomEventBanner implements
+public class TapSenseMoPubBanner extends CustomEventBanner implements
     TapSenseAdViewListener {
 
+  private static final String AD_UNIT_ID_KEY = "ad_unit_id";
+  
   private CustomEventBannerListener mBannerListener;
   private TapSenseAdView mBannerView;
 
@@ -28,8 +30,8 @@ public class TapSenseMoPubBannerAdapter extends CustomEventBanner implements
       return;
     }
 
-    String adUnitId = serverExtras.containsKey("ad_unit_id") ? serverExtras
-        .get("ad_unit_id") : "";
+    String adUnitId = serverExtras.containsKey(AD_UNIT_ID_KEY) ? serverExtras
+        .get(AD_UNIT_ID_KEY) : "";
 
     // Remove test mode before going live and submitting to Play Store
     TapSenseAds.setTestMode();

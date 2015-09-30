@@ -14,7 +14,7 @@ import com.tapsense.android.publisher.TapSenseNativeAd.TapSenseNativeAdListener;
 /*
  * Tested with TapSense SDK version 2.5.0
  */
-public class TapSenseMoPubNativeAdapter extends CustomEventNative {
+public class TapSenseMoPubNative extends CustomEventNative {
   private static final String AD_UNIT_ID_KEY = "ad_unit_id";
 
   // CustomEventNative implementation
