@@ -16,7 +16,7 @@ import com.tapsense.android.publisher.TapSenseAds;
 import com.tapsense.android.publisher.TapSenseInterstitial;
 import com.tapsense.android.publisher.TapSenseInterstitialListener;
 
-public class TapSenseAdMobInterstitialAdapter implements
+public class TapSenseAdMobInterstitial implements
     CustomEventInterstitial, TapSenseInterstitialListener {
 
   private CustomEventInterstitialListener mInterstitialListener;

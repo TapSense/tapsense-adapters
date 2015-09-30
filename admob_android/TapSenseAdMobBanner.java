@@ -16,7 +16,7 @@ import com.tapsense.android.publisher.TapSenseAdView;
 import com.tapsense.android.publisher.TapSenseAdViewListener;
 import com.tapsense.android.publisher.TapSenseAds;
 
-public class TapSenseAdMobBannerAdapter implements CustomEventBanner,
+public class TapSenseAdMobBanner implements CustomEventBanner,
     TapSenseAdViewListener {
 
   private CustomEventBannerListener mBannerListener;
