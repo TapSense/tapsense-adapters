@@ -46,7 +46,6 @@
 #pragma mark - Lifecycle
 
 - (void)dealloc {
-    self.delegate = nil;
     self.interstitial.delegate = nil;
     self.interstitial = nil;
 }

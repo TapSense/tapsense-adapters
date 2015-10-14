@@ -43,7 +43,6 @@
 #pragma mark - Lifecycle
 
 - (void)dealloc {
-    self.delegate = nil;
     self.adBannerView.delegate = nil;
     self.adBannerView = nil;
 }
