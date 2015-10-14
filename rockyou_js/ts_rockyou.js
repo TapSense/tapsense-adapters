@@ -1,6 +1,6 @@
-var TS_SERVER_HOST = "https://ads04.tapsense.com/ads/rockyouad";
+var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/rockyouad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
-var TS_VERSION = "1.0.16";
+var TS_VERSION = "1.0.17";
 
 var paramMap = {};
 
