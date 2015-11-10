@@ -1,10 +1,13 @@
 package com.mopub.nativeads;
 
+import static com.mopub.nativeads.NativeImageHelper.preCacheImages;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.view.View;
 
 import com.tapsense.android.publisher.TSErrorCode;
 import com.tapsense.android.publisher.TapSenseAds;
@@ -17,7 +20,6 @@ import com.tapsense.android.publisher.TapSenseNativeAd.TapSenseNativeAdListener;
 public class TapSenseMoPubNative extends CustomEventNative {
   private static final String AD_UNIT_ID_KEY = "ad_unit_id";
 
-  // CustomEventNative implementation
   @Override
   protected void loadNativeAd(final Context context,
       final CustomEventNativeListener customEventNativeListener,
@@ -26,41 +28,74 @@ public class TapSenseMoPubNative extends CustomEventNative {
 
     String adUnitId = serverExtras.containsKey(AD_UNIT_ID_KEY) ? serverExtras
         .get(AD_UNIT_ID_KEY) : "";
-      
+        
+    if (adUnitId == null || adUnitId.length() == 0) {
+      customEventNativeListener
+          .onNativeAdFailed(NativeErrorCode.NATIVE_ADAPTER_CONFIGURATION_ERROR);
+      return;
+    }
+
     // Remove test mode before going live and submitting to Play Store
     TapSenseAds.setTestMode();
 
-    final TapSenseForwardingNativeAd tapSenseForwardingNativeAd = new TapSenseForwardingNativeAd(
-        context, new TapSenseNativeAd(context, adUnitId), customEventNativeListener);
-    tapSenseForwardingNativeAd.loadAd();
+    final TapSenseStaticNativeAd tapSenseStaticNativeAd = new TapSenseStaticNativeAd(
+        context, new ImpressionTracker(context),
+        new NativeClickHandler(context), customEventNativeListener,
+        new TapSenseNativeAd(context, adUnitId));
+    tapSenseStaticNativeAd.loadAd();
   }
 
-  static class TapSenseForwardingNativeAd extends BaseForwardingNativeAd
-      implements TapSenseNativeAdListener {
+  static class TapSenseStaticNativeAd extends StaticNativeAd implements
+      TapSenseNativeAdListener {
 
     private final Context mContext;
-    private final TapSenseNativeAd mNativeAd;
+    private final ImpressionTracker mImpressionTracker;
+    private final NativeClickHandler mNativeClickHandler;
     private final CustomEventNativeListener mCustomEventNativeListener;
+    private final TapSenseNativeAd mNativeAd;
 
-    TapSenseForwardingNativeAd(final Context context, TapSenseNativeAd nativeAd,
-        final CustomEventNativeListener customEventNativeListener) {
+    TapSenseStaticNativeAd(final Context context,
+        final ImpressionTracker impressionTracker,
+        final NativeClickHandler nativeClickHandler,
+        final CustomEventNativeListener customEventNativeListener,
+        final TapSenseNativeAd nativeAd) {
       mContext = context.getApplicationContext();
-      mNativeAd = nativeAd;
       mCustomEventNativeListener = customEventNativeListener;
-    }
-
-    @Override
-    public void recordImpression() {
-      super.recordImpression();
-      try {
-        mNativeAd.sendImpression();
-      } catch (Exception e) {
-      }
+      mImpressionTracker = impressionTracker;
+      mNativeClickHandler = nativeClickHandler;
+      mNativeAd = nativeAd;
     }
 
     void loadAd() {
       mNativeAd.setListener(this);
       mNativeAd.loadAd();
+    }
+    
+    @Override
+    public void prepare(final View view) {
+      mImpressionTracker.addView(view, this);
+      mNativeClickHandler.setOnClickListener(view, this);
+    }
+
+    @Override
+    public void clear(final View view) {
+      mImpressionTracker.removeView(view);
+      mNativeClickHandler.clearOnClickListener(view);
+    }
+
+    @Override
+    public void recordImpression(final View view) {
+      super.recordImpression(view);
+      try {
+        mNativeAd.sendImpression();
+      } catch (Exception e) {
+      }
+    }
+    
+    @Override
+    public void handleClick(final View view) {
+        notifyAdClicked();
+        mNativeClickHandler.openClickDestinationUrl(getClickDestinationUrl(), view);
     }
 
     @Override
@@ -84,18 +119,20 @@ public class TapSenseMoPubNative extends CustomEventNative {
       if (iconUrl != null) {
         imageUrls.add(getIconImageUrl());
       }
-      preCacheImages(mContext, imageUrls, new ImageListener() {
-        @Override
-        public void onImagesCached() {
-          mCustomEventNativeListener
-              .onNativeAdLoaded(TapSenseForwardingNativeAd.this);
-        }
 
-        @Override
-        public void onImagesFailedToCache(NativeErrorCode errorCode) {
-          mCustomEventNativeListener.onNativeAdFailed(errorCode);
-        }
-      });
+      preCacheImages(mContext, imageUrls,
+          new NativeImageHelper.ImageListener() {
+            @Override
+            public void onImagesCached() {
+              mCustomEventNativeListener
+                  .onNativeAdLoaded(TapSenseStaticNativeAd.this);
+            }
+
+            @Override
+            public void onImagesFailedToCache(NativeErrorCode errorCode) {
+              mCustomEventNativeListener.onNativeAdFailed(errorCode);
+            }
+          });
     }
 
     @Override
