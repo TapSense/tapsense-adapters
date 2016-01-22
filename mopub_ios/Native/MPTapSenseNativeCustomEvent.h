@@ -12,7 +12,7 @@
 #endif
 
 /*
- * Certified with version 3.1.0 of TapSense SDK.
+ * Certified with version 3.1.0 of TapSense SDK amnd MoPub SDK 4.0+.
  */
 
 @interface MPTapSenseNativeCustomEvent : MPNativeCustomEvent

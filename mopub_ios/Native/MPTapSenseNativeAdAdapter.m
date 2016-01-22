@@ -12,14 +12,16 @@
 #import "MPAdDestinationDisplayAgent.h"
 #import "MPCoreInstanceProvider.h"
 #import "MPLogging.h"
+#import "MPStaticNativeAdImpressionTimer.h"
 
-@interface MPTapSenseNativeAdAdapter() <MPAdDestinationDisplayAgentDelegate>
+static const NSTimeInterval kTapSenseRequiredSecondsForImpression = 0.0;
+static const CGFloat kTapSenseRequiredViewVisibilityPercentage = 0.5;
+
+@interface MPTapSenseNativeAdAdapter() <MPAdDestinationDisplayAgentDelegate, MPStaticNativeAdImpressionTimerDelegate>
 
 @property (nonatomic, readonly, strong) TSNativeAd *tsNativeAd;
-
+@property (nonatomic) MPStaticNativeAdImpressionTimer *impressionTimer;
 @property (nonatomic, readonly, strong) MPAdDestinationDisplayAgent *destinationDisplayAgent;
-@property (nonatomic, weak) UIViewController *rootViewController;
-@property (nonatomic, copy) void (^actionCompletionBlock)(BOOL, NSError *);
 
 @end
 
@@ -59,6 +61,9 @@
         
         _properties = properties;
         _destinationDisplayAgent = [[MPCoreInstanceProvider sharedProvider] buildMPAdDestinationDisplayAgentWithDelegate:self];
+
+        _impressionTimer = [[MPStaticNativeAdImpressionTimer alloc] initWithRequiredSecondsForImpression:kTapSenseRequiredSecondsForImpression requiredViewVisibilityPercentage:kTapSenseRequiredViewVisibilityPercentage];
+        _impressionTimer.delegate = self;
     }
     
     return self;
@@ -66,10 +71,6 @@
 
 - (NSURL *) defaultActionURL {
     return [NSURL URLWithString:[self.tsNativeAd clickUrl]];
-}
-
-- (void) trackImpression {
-    [self.tsNativeAd sendImpression];
 }
 
 - (void)dealloc
@@ -80,66 +81,49 @@
 
 #pragma mark - MPNativeAdAdapter
 
-- (NSTimeInterval)requiredSecondsForImpression
+- (void)willAttachToView:(UIView *)view
 {
-    return 0.0;
+    [self.impressionTimer startTrackingView:view];
+}
+
+- (void) trackImpression {
+    [self.tsNativeAd sendImpression];
+    [self.delegate nativeAdWillLogImpression:self];
 }
 
 - (void)displayContentForURL:(NSURL *)URL rootViewController:(UIViewController *)controller
-                  completion:(void (^)(BOOL success, NSError *error))completionBlock
 {
-    NSError *error = nil;
-
     if (!controller) {
-        error = MPNativeAdNSErrorForContentDisplayErrorMissingRootController();
-    }
-
-    if (!URL || ![URL isKindOfClass:[NSURL class]] || ![URL.absoluteString length]) {
-        error = MPNativeAdNSErrorForContentDisplayErrorInvalidURL();
-    }
-
-    if (error) {
-
-        if (completionBlock) {
-            completionBlock(NO, error);
-        }
         return;
     }
 
-    self.rootViewController = controller;
-    self.actionCompletionBlock = completionBlock;
+    if (!URL || ![URL isKindOfClass:[NSURL class]] || ![URL.absoluteString length]) {
+        return;
+    }
 
     [self.destinationDisplayAgent displayDestinationForURL:URL];
 }
 
-#pragma mark - <MPAdDestinationDisplayAgent>
+#pragma mark - <MPAdDestinationDisplayAgentDelegate>
 
 - (UIViewController *)viewControllerForPresentingModalView
 {
-    return self.rootViewController;
+    return [self.delegate viewControllerForPresentingModalView];
 }
 
 - (void)displayAgentWillPresentModal
 {
-    //DO NOT remove this. This will cause MoPub SDK to crash.
+    [self.delegate nativeAdWillPresentModalForAdapter:self];
 }
 
 - (void)displayAgentWillLeaveApplication
 {
-    if (self.actionCompletionBlock) {
-        self.actionCompletionBlock(YES, nil);
-        self.actionCompletionBlock = nil;
-    }
+    [self.delegate nativeAdWillLeaveApplicationFromAdapter:self];
 }
 
 - (void)displayAgentDidDismissModal
 {
-    if (self.actionCompletionBlock) {
-        self.actionCompletionBlock(YES, nil);
-        self.actionCompletionBlock = nil;
-    }
-    self.rootViewController = nil;
+    [self.delegate nativeAdDidDismissModalForAdapter:self];
 }
-
 
 @end
