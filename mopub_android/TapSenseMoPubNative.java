@@ -21,7 +21,7 @@ public class TapSenseMoPubNative extends CustomEventNative {
   private static final String AD_UNIT_ID_KEY = "ad_unit_id";
 
   @Override
-  protected void loadNativeAd(final Context context,
+  protected void loadNativeAd(final Activity context,
       final CustomEventNativeListener customEventNativeListener,
       final Map<String, Object> localExtras,
       final Map<String, String> serverExtras) {
