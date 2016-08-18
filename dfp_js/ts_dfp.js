@@ -1,6 +1,6 @@
-var TS_SERVER_HOST = "http://ads04.tapsense.com/ads/mopubad";
+var TS_SERVER_HOST = "//ads04.tapsense.com/ads/mopubad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
-var TS_VERSION = "0.0.1";
+var TS_VERSION = "0.0.2";
 
 var paramMap = {};
 
