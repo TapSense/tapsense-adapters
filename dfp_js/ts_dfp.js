@@ -1,6 +1,6 @@
 var TS_SERVER_HOST = "//ads04.tapsense.com/ads/mopubad";
 var TS_SESSION_COOKIE_NAME = "ts-sesssion-cookie";
-var TS_VERSION = "0.0.3";
+var TS_VERSION = "0.0.4";
 
 var paramMap = {};
 
@@ -25,7 +25,12 @@ function isBanner(width, height) {
 }
 
 function dfp_fail() {
-    document.write('<sc'+'ript src="https://www.googletagservices.com/tag/js/gpt.js">googletag.pubads().definePassback("/180049092/passback_tapsense", [[300, 250], [320, 50]]).updateTargetingFromMap({"lat":"%%PATTERN:lat%%","long":"%%PATTERN:long%%","AAID":"%%PATTERN:AAID%%"}).display();</scr'+'ipt>');
+    document.write('<sc'
+        +'ript src="https://www.googletagservices.com/tag/js/gpt.js">googletag.pubads().definePassback("/180049092/passback_tapsense", [[300, 250], [320, 50]]).updateTargetingFromMap({'
+        + '"lat":"' + window.ts_lat
+        + '","long":"' + window.ts_long
+        + '","AAID":"' + window.ts_device_id
+        + '"}).display();</scr' + 'ipt>');
 }
 
 function fire_url(url) {
